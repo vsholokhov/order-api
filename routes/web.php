@@ -20,5 +20,6 @@ $router->group(['prefix' => 'job'], function () use ($router) {
     $router->get('', 'JobController@showJob');
     $router->get('{id}', 'JobController@getJob');
     $router->post('', 'JobController@postJob');
+    $router->put('', 'JobController@updateJob');
     $router->delete('{id}', 'JobController@deleteJob');
 });

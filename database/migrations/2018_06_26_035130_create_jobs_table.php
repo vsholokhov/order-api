@@ -15,7 +15,6 @@ class CreateJobsTable extends Migration
     {
         Schema::create('jobs', function (Blueprint $table) {
             $table->increments('jobs_id');
-            $table->integer('job_id');
             $table->integer('user_id');
             $table->string('command');
             $table->smallInteger('priority')->default(1);

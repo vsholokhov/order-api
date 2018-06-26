@@ -11,40 +11,92 @@ namespace App\Http\Controllers;
 
 use App\Models\Jobs;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
 class JobController extends Controller
 {
 
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function showJob()
     {
-        echo "Show next job";
+        try {
+            $job = Jobs::where(['status' => 0])
+                ->orderBy('priority', 'desc')
+                ->get();
+
+            return response()->json($job);
+        } catch (\Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()]);
+        }
     }
 
+    /**
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getJob($id)
     {
-
+        try {
+            if ($job = Jobs::find($id)) {
+                return response()->json($job);
+            } else {
+                return response()->json('job_not_found');
+            }
+        } catch (\Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()]);
+        }
     }
 
-    public function postJob(Request $request, Response $response)
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function postJob(Request $request)
     {
         try {
             $input = $request->all();
 
             $job = new Jobs();
-            $job->job_id = $input['job_id'];
             $job->user_id = $input['user_id'];
             $job->command = $input['command'];
             $job->save();
 
-            echo $response->isSuccessful();
+            return response()->json(['job_id' => $job->jobs_id]);
         } catch (\Exception $exception) {
             echo $exception->getMessage();
         }
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateJob(Request $request)
+    {
+        try {
+            $job = Jobs::find($request->get('job_id'));
+            if (!empty($job)) {
+                $job->command = $request->get('command');
+                $job->priority = $request->get('priority');
+                $job->save();
+
+                return response()->json(['updated' => $job->jobs_id]);
+            } else {
+                return response()->json(['error' => 'could not update job']);
+            }
+
+        } catch (\Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()]);
+        }
+    }
+
+    /**
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function deleteJob($id)
     {
-        throw new \Exception("Sorry, you're not allowed to delete jobs");
+        return response()->json(['error' => "Sorry, you're not allowed to delete jobs"]);
     }
 }
