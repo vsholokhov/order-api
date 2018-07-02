@@ -19,7 +19,8 @@ class JobProcessor extends Command
     public function handle()
     {
         try {
-            $jobs = Jobs::where('status', '0')->orderBy('priority', 'desc')->get();
+            // Get single job that hasn't started yet with highest priority
+            $jobs = Jobs::where('status', '0')->orderBy('priority', 'desc')->first();
             foreach ($jobs as $current) {
 
                 $job = Jobs::find($current->jobs_id);
@@ -31,8 +32,10 @@ class JobProcessor extends Command
                 // run the job
                 $this->info('Job id ' . $job['jobs_id'] . ' with priority ' . $job['priority'] . ' is running');
 
+                // Take 10 seconds to 'do' the job
                 sleep(10);
 
+                // set status to done
                 $job->status = 2;
                 $job->save();
             }
