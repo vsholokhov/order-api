@@ -19,6 +19,7 @@ class CreateJobsTable extends Migration
             $table->string('command');
             $table->smallInteger('priority')->default(1);
             $table->smallInteger('status')->default(0);
+            $table->integer('processing_time');
             $table->timestamps();
         });
     }

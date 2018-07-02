@@ -19,6 +19,8 @@ class JobProcessor extends Command
     public function handle()
     {
         try {
+            // start timer
+            $start = microtime(true);
             // Get single job that hasn't started yet with highest priority
             $job = Jobs::where('status', '0')->orderBy('priority', 'desc')->first();
 
@@ -36,6 +38,12 @@ class JobProcessor extends Command
             $job->status = 2;
             $job->save();
             $this->info('Done processing');
+
+            $end = microtime(true);
+
+            // insert amount of time it took to process
+            $processing_time = $end - $start;
+            $job->proceessing_time = $processing_time;
 
         } catch (\Exception $exception) {
             $this->error($exception->getMessage());
