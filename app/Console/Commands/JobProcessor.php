@@ -20,25 +20,22 @@ class JobProcessor extends Command
     {
         try {
             // Get single job that hasn't started yet with highest priority
-            $jobs = Jobs::where('status', '0')->orderBy('priority', 'desc')->first();
-            foreach ($jobs as $current) {
+            $job = Jobs::where('status', '0')->orderBy('priority', 'desc')->first();
 
-                $job = Jobs::find($current->jobs_id);
+            // set status to running
+            $job->status = 1;
+            $job->save();
 
-                // set status to running
-                $job->status = 1;
-                $job->save();
+            // run the job
+            $this->info('Job id ' . $job['jobs_id'] . ' with priority ' . $job['priority'] . ' is running');
 
-                // run the job
-                $this->info('Job id ' . $job['jobs_id'] . ' with priority ' . $job['priority'] . ' is running');
+            // Take 10 seconds to 'do' the job
+            sleep(10);
 
-                // Take 10 seconds to 'do' the job
-                sleep(10);
-
-                // set status to done
-                $job->status = 2;
-                $job->save();
-            }
+            // set status to done
+            $job->status = 2;
+            $job->save();
+            $this->info('Done processing');
 
         } catch (\Exception $exception) {
             $this->error($exception->getMessage());
