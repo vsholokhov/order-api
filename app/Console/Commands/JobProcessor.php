@@ -43,7 +43,8 @@ class JobProcessor extends Command
 
             // insert amount of time it took to process
             $processing_time = $end - $start;
-            $job->proceessing_time = $processing_time;
+            $job->proceessing_time = floor($processing_time);
+            $job->save();
 
         } catch (\Exception $exception) {
             $this->error($exception->getMessage());
